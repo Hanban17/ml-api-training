@@ -10,10 +10,12 @@
 		// Hide venv and pycache from file explorer and search
 		"files.exclude": {
 		"**/__pycache__": true,
+		"**/.pytest_cache": true,
 		"**/venv": true
 		},
 		"search.exclude": {
 		"**/__pycache__": true,
+		"**/.pytest_cache": true,
 		"**/venv": true
 		},
 		// (Use your venv's Python path. On Windows, it might be "${workspaceFolder}\\.venv\\Scripts\\python.exe")
