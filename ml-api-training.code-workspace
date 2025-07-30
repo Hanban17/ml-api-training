@@ -4,5 +4,51 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		// 1. Python interpreter (virtual env) for this workspace:
+		"python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+		// Hide venv and pycache from file explorer and search
+		"files.exclude": {
+		"**/__pycache__": true,
+		"**/venv": true
+		},
+		"search.exclude": {
+		"**/__pycache__": true,
+		"**/venv": true
+		},
+		// (Use your venv's Python path. On Windows, it might be "${workspaceFolder}\\.venv\\Scripts\\python.exe")
+		// 2. Format with Black:
+		"[python]": {
+			"editor.defaultFormatter": "ms-python.black-formatter", // Use Black Formatter extension
+			"editor.formatOnSave": true,
+			"editor.codeActionsOnSave": {
+				"source.organizeImports": "explicit" // isort on save (see below)
+			}
+		},
+		// Black-specific settings (from the Black extension):
+		"black-formatter.args": [
+			"--line-length",
+			"88"
+		], // Example: custom Black arguments (line length, etc.)
+		// 3. Lint with Flake8:
+		"flake8.enabled": true, // Ensure Flake8 linter is enabled (default true when installed)
+		"flake8.args": [
+			"--max-line-length=88"
+		], // Example: pass arguments to Flake8 (here, matching Black's 88 char line length)
+		// (The Flake8 extension will automatically lint on file open/edit by default:contentReference[oaicite:7]{index=7}:contentReference[oaicite:8]{index=8}.)
+		// 4. Organize imports with isort:
+		"isort.args": [
+			"--profile",
+			"black"
+		], // Example: use Black profile for isort to avoid conflicts:contentReference[oaicite:9]{index=9} 
+		// (Imports are sorted on save via the editor.codeActionsOnSave setting above. 
+		// You can also trigger manually with the "Organize Imports" command or keyboard shortcut.)
+		// 5. Testing with Pytest:
+		"python.testing.pytestEnabled": true, // Enable pytest framework:contentReference[oaicite:10]{index=10}
+		"python.testing.unittestEnabled": false, // Disable unittest (we'll use pytest only)
+		"python.testing.pytestArgs": [
+			"tests"
+		], // (Optional) Specify tests dir or any pytest args. By default, pytest will scan for any `test_*.py` files:contentReference[oaicite:11]{index=11}.
+		"python.testing.autoTestDiscoverOnSaveEnabled": true // Auto-discover tests on save (default is true).
+	}
 }
