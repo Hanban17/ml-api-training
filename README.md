@@ -72,6 +72,36 @@ Invoke-WebRequest -Uri http://localhost:5000/echo `
 
 Or via Postman
 
+## /predict Endpoint
+URL:
+POST /predict
+
+Description:
+Accepts a JSON payload with a "text" field and returns a prediction.
+(Currently uses a dummy model that returns the length of the input text.)
+
+### Example request
+POST /predict
+Content-Type: application/json
+
+{
+  "text": "hello"
+}
+
+### Example Response
+{
+  "prediction": 5
+}
+### Example Bad Request
+POST /predict
+Content-Type: application/json
+
+{}
+### Example Bad Request Response
+{
+  "error": "Missing 'text' in request body"
+}
+
 ## Running Tests
 pytest
 
