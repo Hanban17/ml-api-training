@@ -102,6 +102,84 @@ Content-Type: application/json
   "error": "Missing 'text' in request body"
 }
 
+🧠 Model Training and Preprocessing
+We extended this project to include a fully reproducible machine learning pipeline using the Titanic dataset. This pipeline includes preprocessing, model training, and serialization steps.
+
+model/preprocessing.py: Contains custom preprocessing classes and functions, including:
+
+EmbarkDeckImputer: Handles missing values in embark_town and deck.
+
+AgeImputer: Imputes missing age values based on grouped means by sex, pclass, and alone.
+
+drop_columns_fn: Drops irrelevant columns for model training.
+
+model/titanic_model.py: This script:
+
+Loads and preprocesses the Titanic dataset.
+
+Builds a pipeline combining preprocessing and an XGBoostClassifier.
+
+Trains the model using train_test_split.
+
+Saves the pipeline in two formats:
+
+titanic_pipeline.pkl
+
+titanic_xgboost_pipeline.joblib
+
+These model artifacts are used to simulate loading a trained model in production.
+
+📡 API Endpoints for Prediction
+Two new prediction endpoints were added to demonstrate the use of both pickle and joblib serialized pipelines:
+
+POST /predictwithXGB
+Description: Uses the pipeline stored in titanic_xgboost_pipeline.joblib to make predictions.
+
+Input Format:
+A JSON object representing one Titanic passenger, with the full feature set expected by the model:
+{
+  "pclass": 3,
+  "sex": "male",
+  "age": 22.0,
+  "sibsp": 1,
+  "parch": 0,
+  "fare": 7.25,
+  "embarked": "S",
+  "class": "Third",
+  "who": "man",
+  "adult_male": true,
+  "deck": null,
+  "embark_town": "Southampton",
+  "alive": "no",
+  "alone": false
+}
+Output:
+{
+    "input": {
+        "adult_male": true,
+        "age": 22.0,
+        "alive": "no",
+        "alone": false,
+        "class": "Third",
+        "deck": null,
+        "embark_town": "Southampton",
+        "embarked": "S",
+        "fare": 7.25,
+        "parch": 0,
+        "pclass": 3,
+        "sex": "male",
+        "sibsp": 1,
+        "who": "man"
+    },
+    "prediction": 0,
+    "success": true
+}
+POST /predictwithXGB1
+Description: Uses the titanic_pipeline.pkl model to demonstrate loading and using a Pickle-serialized pipeline.
+
+Functionality is the same as /predictwithXGB.
+
+
 ## Running Tests
 pytest
 
