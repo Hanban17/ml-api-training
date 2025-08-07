@@ -157,7 +157,7 @@ def predictwithXGB():
         return jsonify({"error": "Prediction failed", "details": str(e)}), 500
 
 
-model1 = pickle.load(open("titanic_pipeline.pkl", "rb"))
+model1 = pickle.load(open("model/titanic_pipeline.pkl", "rb"))
 
 
 @app.route("/predictwithXGB1", methods=["POST"])
