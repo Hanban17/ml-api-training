@@ -24,9 +24,9 @@ from xgboost import XGBClassifier
 
 from model.preprocessing import (
     AgeImputer,
+    DropColumnsTransformer,
     EmbarkDeckImputer,
     category_columns,
-    drop_columns_fn,
     numerical_columns,
     ordinal_columns,
 )
@@ -43,7 +43,7 @@ preprocessor = Pipeline(
     [
         ("deck_embark_imputer", EmbarkDeckImputer()),
         ("age_imputer", AgeImputer()),
-        ("drop_columns", FunctionTransformer(drop_columns_fn)),
+        ("drop_columns", DropColumnsTransformer()),
         (
             "transform",
             ColumnTransformer(
@@ -93,4 +93,5 @@ print("💾 Model saved to titanic_xgboost_pipeline.joblib")
 
 
 with open("titanic_pipeline.pkl", "wb") as f:
+    pickle.dump(full_pipeline, f)
     pickle.dump(full_pipeline, f)

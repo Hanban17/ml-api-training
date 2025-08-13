@@ -5,7 +5,6 @@ from sklearn.impute import SimpleImputer
 category_columns = ["sex", "embark_town", "deck"]
 ordinal_columns = ["pclass"]
 numerical_columns = ["age", "sibsp", "parch", "fare"]
-drop_columns = ["class", "who", "adult_male", "embarked", "alive", "alone"]
 
 
 class EmbarkDeckImputer(BaseEstimator, TransformerMixin):
@@ -36,8 +35,25 @@ class EmbarkDeckImputer(BaseEstimator, TransformerMixin):
         return df
 
 
-def drop_columns_fn(data):
-    return data.drop(columns=drop_columns)
+class DropColumnsTransformer(BaseEstimator, TransformerMixin):
+    def __init__(self, columns_to_drop=None):
+        if columns_to_drop is None:
+            self.columns_to_drop = [
+                "class",
+                "who",
+                "adult_male",
+                "embarked",
+                "alive",
+                "alone",
+            ]
+        else:
+            self.columns_to_drop = columns_to_drop
+
+    def fit(self, X, y=None):
+        return self  # No fitting necessary
+
+    def transform(self, X):
+        return X.drop(columns=self.columns_to_drop)
 
 
 class AgeImputer(BaseEstimator, TransformerMixin):
@@ -58,4 +74,5 @@ class AgeImputer(BaseEstimator, TransformerMixin):
             return row["age"]
 
         df["age"] = df.apply(impute_age, axis=1)
+        return df
         return df

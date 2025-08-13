@@ -179,6 +179,96 @@ Description: Uses the titanic_pipeline.pkl model to demonstrate loading and usin
 
 Functionality is the same as /predictwithXGB.
 
+✅ Input Validation with Marshmallow
+The Flask API uses Marshmallow to validate incoming JSON payloads. This ensures that data passed to the model is complete, structured, and correctly typed.
+
+We define an InputSchema using Marshmallow to enforce the expected format for prediction endpoints like /predictwithXGB1.
+
+Example Schema Definition:
+class InputSchema(ma.Schema):
+    pclass = fields.Integer(required=True)
+    sex = fields.String(required=True)
+    age = fields.Float(required=True)
+    sibsp = fields.Integer(required=True)
+    parch = fields.Integer(required=True)
+    fare = fields.Float(required=True)
+    embarked = fields.String()
+    class_ = fields.String(data_key="class")
+    who = fields.String(required=True)
+    adult_male = fields.Boolean(required=True)
+    deck = fields.String()
+    embark_town = fields.String(required=True)
+    alive = fields.String(required=True)
+    alone = fields.Boolean(required=True)
+
+This schema:
+
+Validates input types and required fields
+
+Renames the class_ field to class to avoid Python keyword conflicts
+
+Helps return meaningful validation errors on bad input
+
+Example Validation Error (from /predictwithXGB1):
+{
+  "age": ["Missing data for required field."],
+  "fare": ["Not a valid number."]
+}
+
+🧪 Testing the API (test_app.py)
+A test suite has been added using Pytest to ensure reliability and correctness of the Flask application. The test file tests/test_app.py covers:
+
+Basic health and ping endpoints
+
+Schema validation
+
+Titanic prediction endpoints (including /predictwithXGB1)
+
+Error handling and edge cases
+
+Example Test Case:
+def test_predictwithXGB1_valid(client):
+    valid_input = {
+        "pclass": 3,
+        "sex": "male",
+        "age": 22.0,
+        "sibsp": 1,
+        "parch": 0,
+        "fare": 7.25,
+        "embarked": "S",
+        "class": "Third",
+        "who": "man",
+        "adult_male": True,
+        "deck": "A",
+        "embark_town": "Southampton",
+        "alive": "no",
+        "alone": False,
+    }
+    response = client.post("/predictwithXGB1", json=valid_input)
+    assert response.status_code == 200
+    assert "prediction" in response.get_json()
+
+# Running the App with Docker
+docker build -t flask-ml-app:1.2 .
+docker run -p 5000:5000 flask-ml-app:1.2
+
+Flask will log something like:
+* Running on all addresses (0.0.0.0)
+* Running on http://127.0.0.1:5000
+* Running on http://172.17.0.2:5000
+
+Here’s what each means:
+
+127.0.0.1:5000 → Loopback address inside the container.
+172.17.0.2:5000 → The container’s internal IP on Docker’s bridge network (not directly accessible from your host machine).
+0.0.0.0:5000 → The app is listening on all interfaces inside the container.
+
+How to Access the API
+From your host machine (Windows/Mac/Linux), use:
+http://localhost:5000
+or 
+http://127.0.0.1:5000
+
 
 ## Running Tests
 pytest
@@ -196,3 +286,5 @@ Always activate your virtual environment before working.
 
 Keep requirements.txt updated with:
 pip freeze > requirements.txt
+
+Additional Files (if needed): If your logic is complex, you might create new modules to keep app.py clean. For instance, a model/utils.py for model loading or preprocessing functions, or a app/schemas.py for Pydantic/Marshmellow models. 

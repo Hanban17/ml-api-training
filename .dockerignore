@@ -1,0 +1,25 @@
+# Ignore Python virtual environment
+venv/
+env/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore Git metadata
+.git/
+.gitignore
+
+# Ignore datasets or large files
+data/
+*.csv
+*.parquet
+
+# Ignore Docker artifacts
+*.log
+*.tmp
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db

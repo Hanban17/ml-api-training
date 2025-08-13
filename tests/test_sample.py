@@ -12,9 +12,3 @@ def client():
 def test_addition():
     assert 2 + 2 == 4
     print("Sucessful")
-
-
-def test_predict(client):
-    response = client.post("/predict", json={"text": "hello"})
-    assert response.status_code == 200
-    assert "prediction" in response.get_json()
