@@ -269,6 +269,42 @@ http://localhost:5000
 or 
 http://127.0.0.1:5000
 
+#Environment Variables & Model Paths
+
+This application uses environment variables to configure the location of trained model files at runtime.
+Two variables are used:
+
+Variable Name	Purpose	Default Value (if not set)
+XGB_MODEL_PATH	Path to the XGBoost pipeline .joblib model file	model/titanic_xgboost_pipeline.joblib
+PKL_MODEL_PATH	Path to the Scikit-learn pipeline .pkl model file	model/titanic_pipeline.pkl
+
+##Local Development
+When running locally, you can either:
+Set these environment variables manually
+Windows PowerShell
+$env:XGB_MODEL_PATH = "model\titanic_xgboost_pipeline.joblib"
+$env:PKL_MODEL_PATH = "model\titanic_pipeline.pkl"
+python app/app.py
+
+##Docker Usage
+
+> docker run -d `
+>>   -p 5000:5000 `
+>>   --name test-api-env `
+>>   -v "$PWD\model:/app/model" `
+>>   -e PKL_MODEL_PATH=/app/model/titanic_pipeline_b.pkl `
+>>   -e XGB_MODEL_PATH=/app/model/titanic_xgboost_pipeline.joblib `
+>>   flask-ml-app:env_1
+
+or
+docker run -d -p 5000:5000 \
+  -e XGB_MODEL_PATH="/app/model/titanic_xgboost_pipeline.joblib" \
+  -e PKL_MODEL_PATH="/app/model/titanic_pipeline.pkl" \
+  hanhyk/ml-api-training:env_1
+
+  Note: The container's paths should match where the models are copied inside the Docker image (usually /app/model/...).
+
+
 
 ## Running Tests
 pytest

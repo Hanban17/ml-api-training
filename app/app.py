@@ -40,6 +40,16 @@ class InputSchema(ma.Schema):
 
 schema = InputSchema()  # ✅ Move this ABOVE the route
 
+DEFAULT_XGB = os.path.join(
+    os.path.dirname(__file__), "..", "model", "titanic_xgboost_pipeline.joblib"
+)
+DEFAULT_PKL = os.path.join(
+    os.path.dirname(__file__), "..", "model", "titanic_pipeline.pkl"
+)
+# --- Globals (start as None; fill on first use) ---
+_xgb_model = None
+_pkl_model = None
+
 
 @app.route("/", methods=["GET"])
 def health():
@@ -98,10 +108,22 @@ def predict():
 
 # Load model once at startup
 def load_model():
-    model_path = os.path.join(
-        os.path.dirname(__file__), "..", "model", "titanic_xgboost_pipeline.joblib"
-    )
-    return joblib.load(model_path)
+    global _xgb_model
+    if _xgb_model is None:
+        model_path = os.getenv("XGB_MODEL_PATH", DEFAULT_XGB)
+        app.logger.info("Loading XGB model from %s", model_path)
+        _xgb_model = joblib.load(model_path)
+    return _xgb_model
+
+
+def load_model1():
+    global _pkl_model
+    if _pkl_model is None:
+        model_path = os.getenv("PKL_MODEL_PATH", DEFAULT_PKL)
+        app.logger.info("Loading PKL model from %s", model_path)
+        with open(model_path, "rb") as f:
+            _pkl_model = pickle.load(f)
+    return _pkl_model
 
 
 model = None
@@ -173,6 +195,7 @@ def predictwithXGB():
         input_df = pd.DataFrame([data])
 
         # Predict using the pipeline model
+        model = load_model()
         prediction = model1.predict(input_df)
 
         return (
@@ -185,18 +208,6 @@ def predictwithXGB():
         return jsonify({"error": "Prediction failed", "details": str(e)}), 500
 
 
-def load_model1():
-    path = os.path.join(
-        os.path.dirname(__file__), "..", "model", "titanic_pipeline.pkl"
-    )
-    with open(path, "rb") as f:
-        return pickle.load(f)
-
-
-model1 = None
-model1 = load_model1()
-
-
 @app.route("/predictwithXGB1", methods=["POST"])
 def predictwithXGB1():
     global model1
@@ -207,7 +218,7 @@ def predictwithXGB1():
 
     df = pd.DataFrame([schema.load(json_data)])
     df.rename(columns={"class_": "class"}, inplace=True)
-
+    model1 = load_model1()
     prediction = model1.predict(df)
     return jsonify({"prediction": int(prediction[0])}), 200
 

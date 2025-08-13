@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  web:
+    build: .  # build using the Dockerfile in this directory
+    ports:
+      - "5000:5000"
+    environment:
+      - PKL_MODEL_PATH=/app/model/titanic_pipeline_b.pkl  # example: pass env var (if needed)
+    command: gunicorn -w 4 -b 0.0.0.0:5000 app.app:app
