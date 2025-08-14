@@ -53,7 +53,7 @@ _pkl_model = None
 
 @app.route("/", methods=["GET"])
 def health():
-    return jsonify({"status": "ok"})
+    return jsonify({"status": "GREAT"})
 
 
 @app.route("/ping")
