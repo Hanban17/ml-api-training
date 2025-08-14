@@ -183,7 +183,7 @@ def predictwithXGB():
         return (
             jsonify(
                 {
-                    "error": f"Missing required fields: {missing_fields}",
+                    "error": f"Missing required field(s): {missing_fields}",
                     "expected_fields": EXPECTED_COLUMNS,
                 }
             ),
