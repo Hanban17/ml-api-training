@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.10-slim AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -19,14 +19,19 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
 
 # Copy the whole project (keeps app/ and model/ structure)
 COPY . .
-# --- Configure model paths via environment variables ---
-# These should match the actual locations INSIDE the container
+
+# Optional: test stage adds dev deps and runs tests
+FROM base AS test
+COPY requirements-dev.txt .
+RUN pip install --no-cache-dir -r requirements-dev.txt
 ENV XGB_MODEL_PATH=/app/model/titanic_xgboost_pipeline.joblib \
     PKL_MODEL_PATH=/app/model/titanic_pipeline.pkl
+CMD ["pytest", "-q"]
 
+# Final image used in prod
+FROM base AS runtime
+ENV FLASK_RUN_HOST=0.0.0.0 \
+    XGB_MODEL_PATH=/app/model/titanic_xgboost_pipeline.joblib \
+    PKL_MODEL_PATH=/app/model/titanic_pipeline.pkl
 EXPOSE 5000
-
-# Start the Flask app; module path ensures package imports work
-#CMD ["python", "-m", "app.app"]
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app.app:app"]
-
