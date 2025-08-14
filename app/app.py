@@ -196,7 +196,7 @@ def predictwithXGB():
 
         # Predict using the pipeline model
         model = load_model()
-        prediction = model1.predict(input_df)
+        prediction = model.predict(input_df)
 
         return (
             jsonify({"input": data, "prediction": int(prediction[0]), "success": True}),
