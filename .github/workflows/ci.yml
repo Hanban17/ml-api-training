@@ -21,6 +21,19 @@ jobs:
 
       - name: Run tests in container
         run: docker run --rm ml-api:test
-
+  deploy:          # New job for deployment
+    needs: test   # Run this job only if build-and-test job succeeded
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3  # Check out the code (required for Docker build context)
+      
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+     
+      - name: Build Docker image
+        run: docker build -t hanhyk/flask-ml-app:latest .
+      
+      - name: Push Docker image
+        run: docker push hanhyk/flask-ml-app:latest
 
 
