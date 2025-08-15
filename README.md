@@ -324,3 +324,5 @@ Keep requirements.txt updated with:
 pip freeze > requirements.txt
 
 Additional Files (if needed): If your logic is complex, you might create new modules to keep app.py clean. For instance, a model/utils.py for model loading or preprocessing functions, or a app/schemas.py for Pydantic/Marshmellow models. 
+
+We should push to a seperate branch, that will then push to main when it succeeds
